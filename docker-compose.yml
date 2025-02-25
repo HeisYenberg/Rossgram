@@ -1,0 +1,160 @@
+version: "3.9"
+services:
+
+  users-service:
+    build:
+      context: ./users-service
+    environment:
+      DB_HOST: ${USERS_DB_HOST}
+      DB_PORT: 5432
+      DB_NAME: ${USERS_DB_NAME}
+      DB_USERNAME: ${USERS_DB_USERNAME}
+      DB_PASSWORD: ${USERS_DB_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    networks:
+      - internal_network
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./.m2:/root/.m2
+    depends_on:
+      - users-db
+
+  users-db:
+    image: postgres:15
+    container_name: users-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${USERS_DB_USERNAME}
+      POSTGRES_PASSWORD: ${USERS_DB_PASSWORD}
+      POSTGRES_DB: ${USERS_DB_NAME}
+    networks:
+      - internal_network
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./users-service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/data.sql
+
+  comments-service:
+    build:
+      context: ./comments-service
+    ports:
+      - "8082:8080"
+    environment:
+      DB_HOST: ${COMMENTS_DB_HOST}
+      DB_PORT: 5432
+      DB_NAME: ${COMMENTS_DB_NAME}
+      DB_USERNAME: ${COMMENTS_DB_USERNAME}
+      DB_PASSWORD: ${COMMENTS_DB_PASSWORD}
+    networks:
+      - internal_network
+    volumes:
+      - ./.m2:/root/.m2
+    depends_on:
+      - comments-db
+
+  comments-db:
+    image: postgres:15
+    container_name: comments-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${COMMENTS_DB_USERNAME}
+      POSTGRES_PASSWORD: ${COMMENTS_DB_PASSWORD}
+      POSTGRES_DB: ${COMMENTS_DB_NAME}
+    networks:
+      - internal_network
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./comments-service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/data.sql
+
+  images-service:
+    build:
+      context: ./images-service
+    ports:
+      - "8083:8080"
+    environment:
+      DB_HOST: ${IMAGES_DB_HOST}
+      DB_PORT: 5432
+      DB_NAME: ${IMAGES_DB_NAME}
+      DB_USERNAME: ${IMAGES_DB_USERNAME}
+      DB_PASSWORD: ${IMAGES_DB_PASSWORD}
+    networks:
+      - internal_network
+    volumes:
+      - ./.m2:/root/.m2
+    depends_on:
+      - images-db
+
+  images-db:
+    image: postgres:15
+    container_name: images-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${IMAGES_DB_USERNAME}
+      POSTGRES_PASSWORD: ${IMAGES_DB_PASSWORD}
+      POSTGRES_DB: ${IMAGES_DB_NAME}
+    networks:
+      - internal_network
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./images-service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/data.sql
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+    ports:
+      - "8084:8080"
+    environment:
+      USERS_SERVICE_URL: ${USERS_SERVICE_URL}
+      COMMENTS_SERVICE_URL: ${COMMENTS_SERVICE_URL}
+      IMAGES_SERVICE_URL: ${IMAGES_SERVICE_URL}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    networks:
+      - internal_network
+    volumes:
+      - ./.m2:/root/.m2
+    depends_on:
+      - users-service
+      - comments-service
+      - images-service
+
+  ssr-frontend:
+    build:
+      context: ./ssr-frontend
+    ports:
+      - "8085:8080"
+    environment:
+      GATEWAY_SERVICE_URL: ${GATEWAY_SERVICE_URL}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    networks:
+      - internal_network
+    volumes:
+      - ./.m2:/root/.m2
+    depends_on:
+      - gateway-service
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - gateway-service
+      - ssr-frontend
+    networks:
+      - internal_network
+      - external_network
+    entrypoint: /docker-entrypoint.sh
+    command: [ "nginx", "-g", "daemon off;" ]
+
+networks:
+  internal_network:
+    driver: bridge
+  external_network:
+    driver: bridge

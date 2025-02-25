@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru" class="_aa4d" dir="ltr" data-js-focus-visible>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список пользователей</title>
+    <style data-btmanifest="1019958032_main" nonce>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --site-width-narrow: 600px;
+            }
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pagination-buttons {
+            position: fixed;
+            bottom: 10px;
+            list-style: none;
+            display: flex;
+            padding: 0;
+            margin: 0;
+        }
+
+        .pagination-buttons button {
+            border: none;
+            background: none;
+        }
+    </style>
+</head>
+<body class="_ar45 system-fonts--body sf">
+<div class="x9f619 x1n2onr6 x1ja2u2z">
+    <div class="x78zum5">
+        <div class="x1gryazu x17snn68">
+            <section class="x78zum5 xg6iff7">
+                <main class="xvbhtw8 x78zum5 x1iyjqo2">
+                    <div class="xkrivgy x1gryazu x10v308y xh8yej3 xkqow3a">
+                        <div class="xw7yly9 xod5an3 x1ye3gou">
+                    <span class="x18bv5gf x1s928wv xhkezso x1cpjm7i x1fgarty xl565be x1s688f x5n08af x1tu3fi x3x7a5m"
+                          dir="auto"
+                          style="----base-line-clamp-line-height: 20px; --lineHeight: 20px;">Список пользователей</span>
+                        </div>
+                        <div class="x1y1aw1k">
+                            <div style="height: auto; overflow: hidden auto;">
+                                <div>
+                                    <div th:each="user : ${users.content}">
+                                        <div>
+                                            <div>
+                                                <div class="x1pi30zi x1swvt13 xwib8y2 x1y1aw1k">
+                                                    <div class="x78zum5">
+                                                        <div class="xamitd3">
+                                                            <div class="xq8finb">
+                                                                <a class="x14yjl9h xudhj91 x18nykt9 xww2gxu x1lliihq x10wlt62"
+                                                                   style="height: 44px; width: 44px;"
+                                                                   th:href="@{/users/{user_id}/collections(user_id=${user.id})}">
+                                                                    <svg class="mx-auto"
+                                                                         fill="currentColor"
+                                                                         height="44px"
+                                                                         viewBox="0 0 16 16"
+                                                                         width="44px"
+                                                                         xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                                                                        <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"
+                                                                              fill-rule="evenodd"/>
+                                                                    </svg>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="x78zum5 x1iyjqo2 x6s0dn4">
+                                                            <div>
+                                                                <div>
+                                                                    <div>
+
+                                        <span>
+                                            <a th:href="@{/users/{user_id}/collections(user_id=${user.id})}">
+                                                <div>
+                                                    <div>
+                                                        <span class="_ap3a _aaco _aacw _aacx _aad7 _aade"
+                                                              th:text="${user.username}">
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="xamitd3">
+                                                            <a th:href="@{/users/{user_id}/collections(user_id=${user.id})}">
+                                                                <button class="_acan _acap _acas _aj1- _ap30"
+                                                                        type="button">
+                                                                    <div class="x150jy0e x1e558r4"
+                                                                         style="height: 100%;">
+                                                                        <div class="_ap3a _aaco _aacw _aad6 _aade"
+                                                                             dir="auto">
+                                                                            Коллекция
+                                                                        </div>
+                                                                    </div>
+                                                                </button>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pagination-container">
+                            <ul class="pagination-buttons">
+                                <li th:if="${users.hasPrevious()}">
+                                    <a th:href="@{/users(skip=${users.number - 1})}">
+                                        <button aria-label="Назад"
+                                                tabindex="-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+                                                 viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                                                 stroke-linecap="round" stroke-linejoin="round"
+                                                 class="feather feather-arrow-left-circle _9zm0">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <polyline points="12 8 8 12 12 16"></polyline>
+                                                <line x1="16" y1="12" x2="8" y2="12"></line>
+                                            </svg>
+                                        </button>
+                                    </a>
+                                </li>
+                                <li th:if="${users.hasNext()}">
+                                    <a th:href="@{/users(skip=${users.number + 1})}">
+                                        <button aria-label="Далее"
+                                                tabindex="-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+                                                 viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                                                 stroke-linecap="round" stroke-linejoin="round"
+                                                 class="feather feather-arrow-right-circle _9zm2">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <polyline points="12 16 16 12 12 8"></polyline>
+                                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                                            </svg>
+                                        </button>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </main>
+            </section>
+        </div>
+        <div th:replace="~{fragments/navigation :: navigation}"></div>
+    </div>
+</div>
+<link type="text/css" rel="stylesheet"
+      th:href="@{/css/styles.css}"
+      data-bootloader-hash="jSeRUEM" data-async-css="1" crossorigin="anonymous"
+      data-p=":7,54" data-btmanifest="1019961719_main" data-c="1">
+</body>
+</html>

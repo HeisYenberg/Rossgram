@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      gateway:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        wait-duration-in-open-state:
+          seconds: 30
+        failure-rate-threshold: 50
+        event-consumer-buffer-size: 10
+  retry:
+    instances:
+      gateway:
+        max-attempts: 3
+        wait-duration:
+          seconds: 10
+
+users-service:
+  url: ${USERS_SERVICE_URL:http://localhost:8081}
+comments-service:
+  url: ${COMMENTS_SERVICE_URL:http://localhost:8082}
+images-service:
+  url: ${IMAGES_SERVICE_URL:http://localhost:8083}
+token:
+  signing:
+    key: ${JWT_SECRET_KEY:41b9ed82a41b9ed82a9ce41829ce41829cd1834e8002dc88}
+springdoc:
+  api-docs:
+    path: /swagger-docs
